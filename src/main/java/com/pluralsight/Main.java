@@ -84,8 +84,7 @@ public class Main {
     }
 
     private static void displayCustomers(String url, String user, String password) {
-        String query = "SELECT *  FROM Customers ORDER BY Country";
-                ;
+        String query = "SELECT * FROM Customers ORDER BY Country";
 
         Connection connection = null;
         PreparedStatement statement = null;
