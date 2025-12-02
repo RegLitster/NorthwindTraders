@@ -14,7 +14,7 @@ public class Main {
         String user = args[0];
         String password = args[1];
 
-        loadConnection("northwind", user, password);
+        loadConnection("sakila", user, password);
 
         boolean run = true;
 
@@ -32,6 +32,12 @@ public class Main {
             switch (input) {
                 case "0":
                     System.out.println("Exiting program.");
+                    try {
+                        connection.close();
+                    }
+                    catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                     run = false;
                     break;
                 case "1":
