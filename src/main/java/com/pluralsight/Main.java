@@ -1,5 +1,7 @@
 package com.pluralsight;
 
+import org.apache.commons.dbcp2.BasicDataSource;
+
 import java.sql.*;
 import java.util.Scanner;
 
@@ -107,9 +109,15 @@ public class Main {
     }
 
     public static void loadConnection(String database, String username, String password) {
+        BasicDataSource dataSource = new BasicDataSource();
+        dataSource.setUrl(url + database);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
+
         try {
-            connection = DriverManager.getConnection(url + database, username, password);
+            connection = dataSource.getConnection();
         } catch (SQLException e) {
+            System.out.println("Error when loading connection; Restart app to try again.");
             e.printStackTrace();
         }
     }
