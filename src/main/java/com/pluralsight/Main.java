@@ -4,12 +4,16 @@ import java.sql.*;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+    private static final String url = "jdbc:mysql://127.0.0.1:3306/";
+    private static Connection connection = null;
+    public static Scanner scanner = new Scanner(System.in);
 
-        String url = "jdbc:mysql://localhost:3306/northwind";
+    public static void main(String[] args) {
         String user = args[0];
         String password = args[1];
+
+        loadConnection("northwind", user, password);
+
         boolean run = true;
 
         while (run) {
@@ -17,6 +21,7 @@ public class Main {
                     What do you want to do?
                     1) Display all products
                     2) Display all customers
+                    3) Display all categories
                     0) Exit
                     Select an option:""");
 
@@ -26,132 +31,86 @@ public class Main {
                 case "0":
                     System.out.println("Exiting program.");
                     run = false;
-                    System.exit(0);
                     break;
                 case "1":
-                    displayProducts(url, user, password);
+                    displayProducts();
                     break;
                 case "2":
-                    displayCustomers(url, user, password);
+                    displayCustomers();
+                    break;
+                case "3":
+                    displayCategories();
                     break;
                 default:
                     System.out.println("Invalid option. Please try again.");
-                    break;
             }
         }
 
         scanner.close();
     }
 
-    private static void displayProducts(String url, String user, String password) {
+    private static void displayProducts() {
         String query = "SELECT * FROM Products";
 
-        Connection connection = null;
-        PreparedStatement statement = null;
-        ResultSet results = null;
-
-        try {
-            connection = DriverManager.getConnection(url, user, password);
-            statement = connection.prepareStatement(query);
-            results = statement.executeQuery();
+        try (PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet results = statement.executeQuery()) {
 
             while (results.next()) {
-                int id = results.getInt("ProductID");
-                String name = results.getString("ProductName");
-                double price = results.getDouble("UnitPrice");
-                int stock = results.getInt("UnitsInStock");
-
-                System.out.println("Product Id: " + id);
-                System.out.println("Name: " + name);
-                System.out.println("Price: " + price);
-                System.out.println("Stock: " + stock);
+                System.out.println("Product Id: " + results.getInt("ProductID"));
+                System.out.println("Name: " + results.getString("ProductName"));
+                System.out.println("Price: " + results.getDouble("UnitPrice"));
+                System.out.println("Stock: " + results.getInt("UnitsInStock"));
                 System.out.println("------------------");
-
             }
+
         } catch (SQLException e) {
-            System.out.println("Error accessing Products table.");
             e.printStackTrace();
-        } finally {
-
-
-            if (results != null) {
-                try {
-                    results.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-
-                }
-            }
         }
     }
 
-    private static void displayCustomers(String url, String user, String password) {
+    private static void displayCustomers() {
         String query = "SELECT * FROM Customers ORDER BY Country";
 
-        Connection connection = null;
-        PreparedStatement statement = null;
-        ResultSet results = null;
-
-        try {
-            connection = DriverManager.getConnection(url, user, password);
-            statement = connection.prepareStatement(query);
-            results = statement.executeQuery();
+        try (PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet results = statement.executeQuery()) {
 
             while (results.next()) {
-                String contactName = results.getString("ContactName");
-                String companyName = results.getString("CompanyName");
-                String city = results.getString("City");
-                String country = results.getString("Country");
-                String phone = results.getString("Phone");
-
-                System.out.println("Contact Name: " + contactName);
-                System.out.println("Company Name: " + companyName);
-                System.out.println("City: " + city);
-                System.out.println("Country: " + country);
-                System.out.println("Phone: " + phone);
+                System.out.println("Contact Name: " + results.getString("ContactName"));
+                System.out.println("Company Name: " + results.getString("CompanyName"));
+                System.out.println("City: " + results.getString("City"));
+                System.out.println("Country: " + results.getString("Country"));
+                System.out.println("Phone: " + results.getString("Phone"));
                 System.out.println("------------------");
             }
+
         } catch (SQLException e) {
-            System.out.println("Error accessing Customers table.");
             e.printStackTrace();
-        } finally {
-            if (results != null) {
-                try {
-                    results.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+        }
+    }
+
+    private static void displayCategories() {
+        String query = "SELECT * FROM Categories";
+
+        try (PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet results = statement.executeQuery()) {
+
+            while (results.next()) {
+                System.out.println("Category ID: " + results.getInt("CategoryID"));
+                System.out.println("Name: " + results.getString("CategoryName"));
+                System.out.println("Description: " + results.getString("Description"));
+                System.out.println("------------------");
             }
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void loadConnection(String database, String username, String password) {
+        try {
+            connection = DriverManager.getConnection(url + database, username, password);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }
-
-
