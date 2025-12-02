@@ -8,8 +8,8 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         String url = "jdbc:mysql://localhost:3306/northwind";
-        String user = "root";
-        String password = "yearup";
+        String user = args[0];
+        String password = args[1];
         boolean run = true;
 
         while (run) {
@@ -66,19 +66,35 @@ public class Main {
                 System.out.println("Price: " + price);
                 System.out.println("Stock: " + stock);
                 System.out.println("------------------");
+
             }
         } catch (SQLException e) {
             System.out.println("Error accessing Products table.");
             e.printStackTrace();
         } finally {
-            try {
-                assert statement != null;
-                assert results != null;
-                results.close();
-                statement.close();
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
+
+
+            if (results != null) {
+                try {
+                    results.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+
+                }
             }
         }
     }
@@ -113,15 +129,29 @@ public class Main {
             System.out.println("Error accessing Customers table.");
             e.printStackTrace();
         } finally {
-            try {
-                assert statement != null;
-                assert results != null;
-                results.close();
-                statement.close();
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (results != null) {
+                try {
+                    results.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 }
+
+
